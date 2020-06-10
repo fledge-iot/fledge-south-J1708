@@ -1,50 +1,6 @@
 ====================
 Fledge J1708 Plugin
 ====================
-
-Fledge "J1708" plugin passes deltas of reading data. A new reading
-is only sent onwards if the value of one or more data points in the new
-reading differs from the previous reading sent by the specified tolerance
-percentage.
-
-By defining a minimum rate it is possible to force readings to be sent
-at that defined rate when there is no change in the value of the reading.
-
-Rates may be defined as per second, per minute, per hour or per day.
-
-Configuration items
--------------------
-
-The following configuration items are supported:
-
-  tolerance
-    The percentage tolerance when comparing reading data. Only values
-    that differ by more than this percentage will be considered as different
-    from each other.
-
-  minRate
-    The minimum rate at which readings should be sent. This is the rate at
-    which readings will appear if there is no change in value.
-
-  rateUnit
-    The units in which minRate is define (per second, minute, hour or day)
-
-Example
--------
-
-Send only readings that differ by more than 1 percent from the the
-previous reading sent or at a rate of one reading every half hour if
-the change is less than this.
-
-  tolerance
-    1
-
-  minRate
-    2
-
-  rateUnit
-    per hour
-
 Build
 -----
 To build Fledge "J1708" C++ plugin:
