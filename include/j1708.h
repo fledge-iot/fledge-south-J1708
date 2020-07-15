@@ -3,7 +3,7 @@
 /*
  * Fledge south service plugin
  *
- * Copyright (c) 2020 Nexcom USA
+ * Copyright (c) 2020 Nex Computers Inc.
  *
  * Release under the Apache 2.0 License
  *
