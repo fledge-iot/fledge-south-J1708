@@ -142,7 +142,7 @@ Reading plugin_poll(PLUGIN_HANDLE *handle)
 {
 J1708 *j1708 = (J1708 *)handle;
 
-	return j1708->takeReading();
+	return j1708->nextValue();
 }
 
 /**
