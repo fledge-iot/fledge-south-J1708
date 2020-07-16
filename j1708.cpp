@@ -1,7 +1,7 @@
 /*
  * FogLAMP J1708 south plugin.
  *
- * Copyright (c) 2020 Nex Computers
+ * Copyright (c) 2020 Nex Computers Inc.
  *
  * Released under the Apache 2.0 Licence
  *
