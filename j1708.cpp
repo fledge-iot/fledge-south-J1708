@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <logger.h>
 #include <unistd.h>
+#include <vector>
 
 using namespace std;
 
@@ -125,6 +126,14 @@ Reading J1708::nextValue()
     char    buffer[80], *ptr;
     int     ch;
 
+	if (!m_fp)	// If we can't open the serial connection return an empty reading
+	{
+    		if ((m_fp = fopen(m_port.c_str(), "r")) == NULL)
+		{
+			vector<Datapoint *> v;
+			return Reading(m_asset, v);
+		}
+	}
         ptr = buffer;
         while((ch = fgetc(m_fp)) != EOF && ! (ch == '\r' || ch == '\n') && ptr - buffer < sizeof(buffer))
         {
