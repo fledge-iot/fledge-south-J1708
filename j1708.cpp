@@ -16,6 +16,7 @@
 #include <logger.h>
 #include <unistd.h>
 #include <vector>
+#include <logger.h>
 
 using namespace std;
 
@@ -29,6 +30,7 @@ static void threadWrapper(J1708 *j1708)
  */
 J1708::J1708()
 {
+    m_fp = NULL;
 }
 
 /**
@@ -37,7 +39,10 @@ J1708::J1708()
 J1708::~J1708()
 {
     m_running = false;
-    m_thread->join();
+    if (m_thread)
+    {
+        m_thread->join();
+    }
 }
 
 void J1708::start()
@@ -48,7 +53,7 @@ void J1708::start()
 
 void J1708::pollThread()
 {
-    while(m_running)
+    while (m_running)
     {
         (*m_ingest)(m_data, nextValue());
         sleep(1);
@@ -68,7 +73,7 @@ void J1708::configure(ConfigCategory *config)
         string value = config->getValue("baud");
         baud = atoi(value.c_str());
     }
-    if  (config->itemExists("parity"))
+    if (config->itemExists("parity"))
     {
         string value = config->getValue("parity");
         if (value.compare("even") == 0)
@@ -84,29 +89,29 @@ void J1708::configure(ConfigCategory *config)
             parity = 'N';
         }
     }
-    if  (config->itemExists("bits"))
+    if (config->itemExists("bits"))
     {
         string value = config->getValue("bits");
         bits = atoi(value.c_str());
     }
-    if  (config->itemExists("stopBits"))
+    if (config->itemExists("stopBits"))
     {
         string value = config->getValue("stopBits");
         stopBits = atoi(value.c_str());
     }
-    if  (m_baud != baud)
+    if (m_baud != baud)
     {
         m_baud = baud;
     }
-    if  (m_parity != parity)
+    if (m_parity != parity)
     {
         m_parity = parity;
     }
-    if  (m_bits != bits)
+    if (m_bits != bits)
     {
         m_bits = bits;
     }
-    if  (m_stopBits = stopBits)
+    if (m_stopBits = stopBits)
     {
         m_stopBits = stopBits;
     }
@@ -114,7 +119,7 @@ void J1708::configure(ConfigCategory *config)
     m_fp = fopen(m_port.c_str(), "r");
     if (m_fp == NULL)
     {
-        throw runtime_error("Unable to open file");
+        Logger::getLogger()->error("Unable to open file :%s:", m_port.c_str());
     }
 }
 
@@ -123,27 +128,27 @@ void J1708::configure(ConfigCategory *config)
  */
 Reading J1708::nextValue()
 {
-    char    buffer[80], *ptr;
-    int     ch;
+    char buffer[80], *ptr;
+    int ch;
 
-	if (!m_fp)	// If we can't open the serial connection return an empty reading
-	{
-    		if ((m_fp = fopen(m_port.c_str(), "r")) == NULL)
-		{
-			vector<Datapoint *> v;
-			return Reading(m_asset, v);
-		}
-	}
-        ptr = buffer;
-        while((ch = fgetc(m_fp)) != EOF && ! (ch == '\r' || ch == '\n') && ptr - buffer < sizeof(buffer))
+    if (!m_fp) // If we can't open the serial connection return an empty reading
+    {
+        if ((m_fp = fopen(m_port.c_str(), "r")) == NULL)
         {
-            *ptr++ = ch;
+            vector<Datapoint *> v;
+            return Reading(m_asset, v);
         }
-        *ptr = 0;
-        if (ch == EOF)
-        {
-            fseek(m_fp, 0L, SEEK_SET);
-        }
-        DatapointValue value(buffer);
-        return Reading(m_asset, new Datapoint(m_asset, value));
+    }
+    ptr = buffer;
+    while ((ch = fgetc(m_fp)) != EOF && !(ch == '\r' || ch == '\n') && ptr - buffer < sizeof(buffer))
+    {
+        *ptr++ = ch;
+    }
+    *ptr = 0;
+    if (ch == EOF)
+    {
+        fseek(m_fp, 0L, SEEK_SET);
+    }
+    DatapointValue value(buffer);
+    return Reading(m_asset, new Datapoint(m_asset, value));
 }
